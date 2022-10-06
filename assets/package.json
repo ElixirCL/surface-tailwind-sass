@@ -1,0 +1,10 @@
+{
+    "private": true,
+    "devDependencies": {
+        "autoprefixer": "9.8.0"
+    },
+    "engines": {
+        "npm": ">=6.0.0",
+        "node": ">=14.0.0"
+    }
+}
