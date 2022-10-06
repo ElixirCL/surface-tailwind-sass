@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.16">
-<meta name="author" content="Realizaremos una configuración básica de https://surface-ui.org/[Surface UI], https://tailwindcss.com/[Tailwind] y https://sass-lang.com/[Sass] en un proyecto https://www.phoenixframework.org/[Phoenix con LiveView].">
+<meta name="description" content="Un proyecto de ejemplo de Phoenix con Surface, Tailwind y Sass.">
+<meta name="keywords" content="elixir, programación, lenguaje, referencia">
+<meta name="copyright" content="CC-BY-NC-SA 4.0">
 <title>Surface + Tailwind + Sass</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -437,17 +439,74 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 #footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/styles/github.min.css">
 </head>
-<body class="article">
+<body class="book toc2 toc-left">
 <div id="header">
 <h1>Surface + Tailwind + Sass</h1>
-<div class="details">
-<span id="author" class="author">Realizaremos una configuración básica de https://surface-ui.org/[Surface UI], https://tailwindcss.com/[Tailwind] y https://sass-lang.com/[Sass] en un proyecto https://www.phoenixframework.org/[Phoenix con LiveView].</span><br>
+<div id="toc" class="toc2">
+<div id="toctitle">Tabla de Contenidos</div>
+<ul class="sectlevel1">
+<li><a href="#_creación_de_un_nuevo_proyecto">1. Creación de un nuevo proyecto</a></li>
+<li><a href="#_mix_exs">2. mix.exs</a></li>
+<li><a href="#_formatter_exs">3. .formatter.exs</a></li>
+<li><a href="#_gitignore">4. .gitignore</a>
+<ul class="sectlevel2">
+<li><a href="#_vscodesettings_json">4.1. .vscode/settings.json</a></li>
+</ul>
+</li>
+<li><a href="#_directorio_assets">5. Directorio assets/</a>
+<ul class="sectlevel2">
+<li><a href="#_package_json">5.1. package.json</a></li>
+<li><a href="#_postcss_config_js">5.2. postcss.config.js</a></li>
+<li><a href="#_tailwind_config_js">5.3. tailwind.config.js</a></li>
+<li><a href="#_cssapp_scss">5.4. css/app.scss</a></li>
+<li><a href="#_jsapp_js">5.5. js/app.js</a></li>
+</ul>
+</li>
+<li><a href="#_directorio_config">6. Directorio config/</a>
+<ul class="sectlevel2">
+<li><a href="#_configconfig_exs">6.1. config/config.exs</a></li>
+<li><a href="#_configdev_exs">6.2. config/dev.exs</a></li>
+</ul>
+</li>
+<li><a href="#_directorio_libmiapp_web">7. Directorio lib/miapp_web</a>
+<ul class="sectlevel2">
+<li><a href="#_endpoint_ex">7.1. endpoint.ex</a></li>
+<li><a href="#_router_ex">7.2. router.ex</a></li>
+<li><a href="#_livehome_ex">7.3. live/home.ex</a></li>
+<li><a href="#_miapp_web_ex">7.4. miapp_web.ex</a></li>
+</ul>
+</li>
+<li><a href="#_probando">8. Probando</a>
+<ul class="sectlevel2">
+<li><a href="#_página_principal">8.1. Página Principal</a></li>
+<li><a href="#_catálogo_de_surface">8.2. Catálogo de Surface</a></li>
+</ul>
+</li>
+<li><a href="#_creditos">9. Creditos</a></li>
+</ul>
 </div>
 </div>
 <div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Realizaremos una configuración básica de <a href="https://surface-ui.org/">Surface UI</a>, <a href="https://tailwindcss.com/">Tailwind</a> y <a href="https://sass-lang.com/">Sass</a> en un proyecto <a href="https://www.phoenixframework.org/">Phoenix con LiveView</a>.</p>
+</div>
+<div class="paragraph">
+<p>Escrito por <a href="https://ninjas.cl">Camilo Castro</a> y <a href="https://github.com/elixircl/surface-tailwind-sass/graphs/contributors">colaboradores</a>.
+Para <a href="https://elixircl.github.io">Elixir Chile</a>.</p>
+</div>
+<div class="paragraph">
+<p>A menos que se especifique explícitamente, los contenidos de ésta obra están bajo una <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Licencia Creative Commons Atribución-No-Comercial-Compartir-Igual 4.0 Internacional</a>
+<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><span class="image"><img src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" alt="Licencia Creative Commons"></span></a>. El código fuente está bajo la licencia BSD.</p>
+</div>
+<!-- toc disabled -->
+</div>
+</div>
 <div class="sect1">
-<h2 id="_creación_de_un_nuevo_proyecto">Creación de un nuevo proyecto</h2>
+<h2 id="_creación_de_un_nuevo_proyecto">1. Creación de un nuevo proyecto</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Vamos a crear un nuevo proyecto, aunque si ya tienes uno previo igual es útil, puesto que realizaremos
@@ -458,13 +517,13 @@ las configuraciones de forma manual para entender como funciona todo.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-sh" data-lang="sh">$ mix phx.new miapp --no-ecto --no-mailer</code></pre>
+<pre class="highlightjs highlight"><code class="language-sh hljs" data-lang="sh">$ mix phx.new miapp --no-ecto --no-mailer</code></pre>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_mix_exs">mix.exs</h2>
+<h2 id="_mix_exs">2. mix.exs</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Vamos a nuestro archivo <code>mix.exs</code> y agregamos las deps y sus configuraciones.</p>
@@ -474,7 +533,7 @@ las configuraciones de forma manual para entender como funciona todo.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-elixir" data-lang="elixir">def project do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">def project do
     # [ ...
         compilers: [:surface] ++ Mix.compilers(),
     # ] ...
@@ -486,7 +545,7 @@ end</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-elixir" data-lang="elixir">defp elixirc_paths(:test), do: ["lib", "test/support"]
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">defp elixirc_paths(:test), do: ["lib", "test/support"]
 defp elixirc_paths(:dev), do: ["lib"] ++ catalogues()
 defp elixirc_paths(_), do: ["lib"]
 
@@ -503,7 +562,7 @@ end</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-elixir" data-lang="elixir">defp deps do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">defp deps do
     # [...
         {:tailwind, "~&gt; 0.1", runtime: Mix.env() == :dev},
         {:dart_sass, "~&gt; 0.4", runtime: Mix.env() == :dev},
@@ -519,7 +578,7 @@ end</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-elixir" data-lang="elixir">defp aliases do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">defp aliases do
     [
         setup: ["deps.get", "cmd npm --prefix=./assets i"],
         lint: ["format", "credo --strict"],
@@ -568,14 +627,14 @@ para instalar las dependencias.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_formatter_exs">.formatter.exs</h2>
+<h2 id="_formatter_exs">3. .formatter.exs</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Añadiremos la configuración para el comando <code>mix format</code></p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-elixir" data-lang="elixir">[
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">[
     # import_deps: [:ecto, :phoenix, :surface],
     import_deps: [:phoenix, :surface],
     plugins: [Phoenix.LiveView.HTMLFormatter, Surface.Formatter.Plugin],
@@ -587,26 +646,26 @@ para instalar las dependencias.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_gitignore">.gitignore</h2>
+<h2 id="_gitignore">4. .gitignore</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Aprovechamos de agregar algunas reglas para ignorar ciertos archivos de surface a nuestro archivo <code>.gitignore</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-text" data-lang="text">.DS_Store
+<pre class="highlightjs highlight"><code class="language-text hljs" data-lang="text">.DS_Store
 _hooks/
 _components.css</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_vscodesettings_json">.vscode/settings.json</h3>
+<h3 id="_vscodesettings_json">4.1. .vscode/settings.json</h3>
 <div class="paragraph">
 <p>Si usas <em>VSCode</em> puedes añadir la siguiente configuración:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-json" data-lang="json">{
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
     "scss.lint.unknownAtRules": "ignore",
     "files.associations": {
         "*.css": "tailwindcss"
@@ -618,14 +677,14 @@ _components.css</code></pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_directorio_assets">Directorio assets/</h2>
+<h2 id="_directorio_assets">5. Directorio assets/</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Este directorio tendrá los archivos <code>js</code> y <code>css</code> que luego serán
 procesados por <code>tailwind</code>, <code>sass</code> y <code>esbuild</code>.</p>
 </div>
 <div class="sect2">
-<h3 id="_package_json">package.json</h3>
+<h3 id="_package_json">5.1. package.json</h3>
 <div class="paragraph">
 <p>Crearemos un archivo llamado <code>package.json</code> donde podremos
 incluir las dependencias de javascript que necesitemos en el proyecto.</p>
@@ -635,7 +694,7 @@ incluir las dependencias de javascript que necesitemos en el proyecto.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-json" data-lang="json">{
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
     "private": true,
     "engines": {
         "npm": "&gt;=6.0.0",
@@ -646,13 +705,13 @@ incluir las dependencias de javascript que necesitemos en el proyecto.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_postcss_config_js">postcss.config.js</h3>
+<h3 id="_postcss_config_js">5.2. postcss.config.js</h3>
 <div class="paragraph">
 <p>El contenido puede ser similar a lo siguiente:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-js" data-lang="js">module.exports = {
+<pre class="highlightjs highlight"><code class="language-js hljs" data-lang="js">module.exports = {
     plugins: [
         require('tailwindcss'),
         require('autoprefixer'),
@@ -665,13 +724,13 @@ incluir las dependencias de javascript que necesitemos en el proyecto.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_tailwind_config_js">tailwind.config.js</h3>
+<h3 id="_tailwind_config_js">5.3. tailwind.config.js</h3>
 <div class="paragraph">
 <p>El contenido puede ser similar a lo siguiente:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-js" data-lang="js">module.exports = {
+<pre class="highlightjs highlight"><code class="language-js hljs" data-lang="js">module.exports = {
   important: true,
   content: [
     "../lib/**/*.{ex,leex,heex,eex,sface}",
@@ -686,7 +745,7 @@ incluir las dependencias de javascript que necesitemos en el proyecto.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_cssapp_scss">css/app.scss</h3>
+<h3 id="_cssapp_scss">5.4. css/app.scss</h3>
 <div class="paragraph">
 <p>Cabe destacar que utilizar <a href="https://sass-lang.com">Sass</a> es completamente
 opcional y hasta innecesario si se realiza una configuración apropiada de <em>postcss</em>. Revisar cómo usando acá <a href="https://tailwindcss.com/docs/using-with-preprocessors" class="bare">https://tailwindcss.com/docs/using-with-preprocessors</a></p>
@@ -696,7 +755,7 @@ opcional y hasta innecesario si se realiza una configuración apropiada de <em>p
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-css" data-lang="css">$color: purple;
+<pre class="highlightjs highlight"><code class="language-css hljs" data-lang="css">$color: purple;
 body {
     background-color: $color;
 }</code></pre>
@@ -717,21 +776,31 @@ body {
 </div>
 </div>
 <div class="sect2">
-<h3 id="_jsapp_js">js/app.js</h3>
+<h3 id="_jsapp_js">5.5. js/app.js</h3>
 <div class="paragraph">
 <p>Vamos al archivo <code>js/app.js</code> y eliminamos la importación de los estilos
 css:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-js" data-lang="js">// import "../css/app.css"</code></pre>
+<pre class="highlightjs highlight"><code class="language-js hljs" data-lang="js">// import "../css/app.css"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Y agregamos los Hooks creados por Surface</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-js hljs" data-lang="js">import Hooks from "./_hooks"
+// ...
+let liveSocket = new LiveSocket("/live", Socket, { hooks: Hooks, ... })</code></pre>
 </div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_directorio_config">Directorio config/</h2>
+<h2 id="_directorio_config">6. Directorio config/</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Vamos a usar dos configuraciones específicas. Una será la de producción
@@ -739,7 +808,7 @@ que guardará y aglomerará (digest) los archivos js y css. Guardará los archiv
 <code>priv/public</code> que será usado principalmente para desarrollo (para tener autoreload) y evitar el caché.</p>
 </div>
 <div class="sect2">
-<h3 id="_configconfig_exs">config/config.exs</h3>
+<h3 id="_configconfig_exs">6.1. config/config.exs</h3>
 <div class="paragraph">
 <p>Vamos a configurar las opciones predeterminadas. Esta configuración guardará los archivos en <code>priv/static</code>.</p>
 </div>
@@ -749,7 +818,7 @@ que guardará y aglomerará (digest) los archivos js y css. Guardará los archiv
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-elixir" data-lang="elixir">config :miapp, MiappWeb.Endpoint,
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">config :miapp, MiappWeb.Endpoint,
   # ...
   static_url: [path: "/static"]</code></pre>
 </div>
@@ -759,7 +828,7 @@ que guardará y aglomerará (digest) los archivos js y css. Guardará los archiv
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-elixir" data-lang="elixir"># esbuild
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir"># esbuild
 config :esbuild,
   version: "0.14.29",
   default: [
@@ -792,13 +861,13 @@ config :tailwind,
 </div>
 </div>
 <div class="sect2">
-<h3 id="_configdev_exs">config/dev.exs</h3>
+<h3 id="_configdev_exs">6.2. config/dev.exs</h3>
 <div class="paragraph">
 <p>Ésta configuración guardará los archivos en <code>priv/public</code>. Sobre escribe las configuraciones y rutas de <code>config.exs</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-elixir" data-lang="elixir">config :esbuild,
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">config :esbuild,
   version: "0.14.29",
   default: [
     args: ~w(js/app.js --bundle --target=es2017 --outdir=../priv/public/assets),
@@ -843,7 +912,7 @@ los archivos javascript, sass y surface.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-elixir" data-lang="elixir">config :miapp, MiappWeb.Endpoint,
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">config :miapp, MiappWeb.Endpoint,
     # ...
     watchers: [
         esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
@@ -862,13 +931,15 @@ los archivos javascript, sass y surface.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-elixir" data-lang="elixir">config :miapp, MiappWeb.Endpoint,
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">config :miapp, MiappWeb.Endpoint,
     reloadable_compilers: [:phoenix, :elixir, :surface],
     live_reload: [
         patterns: [
             # ...
             ~r"priv/public/.*(js|css|png|jpeg|jpg|gif|svg)$",
             ~r"priv/catalogue/.*(ex)$",
+            ~r"lib/miapp_web/(live|views|components)/.*(ex|js)$",
+            ~r"lib/miapp_web/live/.*(sface)$",
             # ...
         ]
 ]</code></pre>
@@ -878,21 +949,21 @@ los archivos javascript, sass y surface.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_directorio_libmiapp_web">Directorio lib/miapp_web</h2>
+<h2 id="_directorio_libmiapp_web">7. Directorio lib/miapp_web</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>En este directorio irán las configuraciones de los sistemas que sirven
 los requests desde el navegador y renderizan html.</p>
 </div>
 <div class="sect2">
-<h3 id="_endpoint_ex">endpoint.ex</h3>
+<h3 id="_endpoint_ex">7.1. endpoint.ex</h3>
 <div class="paragraph">
 <p>Necesitamos configurar el archivo <code>endpoint.ex</code> para permitir
 que los assets sean servidos desde nuestro directorio especial.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-elixir" data-lang="elixir">    # ...
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">    # ...
     socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
     # ...
 
@@ -911,14 +982,14 @@ que los assets sean servidos desde nuestro directorio especial.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_router_ex">router.ex</h3>
+<h3 id="_router_ex">7.2. router.ex</h3>
 <div class="paragraph">
 <p>Importamos las funciones de <em>Surface</em> para utilizarlas
 en nuestras rutas.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-elixir" data-lang="elixir">defmodule MiappWeb.Router do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">defmodule MiappWeb.Router do
     use MiappWeb, :router
     import Surface.Catalogue.Router
     # ...</code></pre>
@@ -930,12 +1001,12 @@ llamada <code>live/home.ex</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-elixir" data-lang="elixir"># ...
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir"># ...
 scope "/", MiappWeb do
     pipe_through :browser
 
     live_session :default do
-        live "/", MiappWeb.Live.Home, :index
+        live "/", Live.Home, :index
     end
 end
 # ...</code></pre>
@@ -948,7 +1019,7 @@ desarollo.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-elixir" data-lang="elixir">if Mix.env() == :dev do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">if Mix.env() == :dev do
     scope "/" do
         pipe_through :browser
         surface_catalogue "/catalogue"
@@ -958,31 +1029,31 @@ end</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_livehome_ex">live/home.ex</h3>
+<h3 id="_livehome_ex">7.3. live/home.ex</h3>
 <div class="paragraph">
 <p>Crearemos un archivo llamado <code>live/home.ex</code> para renderizar un html simple usando el siguiente contenido:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-elixir" data-lang="elixir">defmodule MiappWeb.Live.Home do
-    use MiappWeb, :surface_live_view
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">defmodule MiappWeb.Live.Home do
+  use MiappWeb, :surface_live_view
 
-    @impl true
-    def render(assigns) do
-        ~F"""
-        &lt;div class={"items-center", "color-white", "flex"}&gt;
-        &lt;div class={"flex-col"}&gt;
-            &lt;h1&gt;Esta es Mi App&lt;/h1&gt;
-        &lt;/div&gt;
-        &lt;/div&gt;
-        """
-    end
+  @impl true
+  def render(assigns) do
+    ~F"""
+    &lt;div class={"bg-slate-100"}&gt;
+      &lt;div class={"text-sky-500"}&gt;
+        &lt;h1 class={"text-lg", "font-medium"}&gt;Esta es Mi App&lt;/h1&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    """
+  end
 end</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_miapp_web_ex">miapp_web.ex</h3>
+<h3 id="_miapp_web_ex">7.4. miapp_web.ex</h3>
 <div class="paragraph">
 <p>Como podemos notar estamos llamando a <code>surface_live_view</code>
 para importar un código global. Ésto nos permitirá
@@ -993,7 +1064,7 @@ simplificar el código, reutilizando la importación.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-elixir" data-lang="elixir">def surface_live_view do
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">def surface_live_view do
     quote do
         use Surface.LiveView,
             layout: {MiappWeb.LayoutView, "live.html"}
@@ -1006,7 +1077,7 @@ end</code></pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_probando">Probando</h2>
+<h2 id="_probando">8. Probando</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Si todo sale como esta previsto, solo bastaría ejecutar el comando</p>
@@ -1020,13 +1091,50 @@ end</code></pre>
 <div class="paragraph">
 <p>Al cual podremos acceder desde <a href="http://localhost:4000" class="bare">http://localhost:4000</a></p>
 </div>
+<div class="sect2">
+<h3 id="_página_principal">8.1. Página Principal</h3>
+<div class="paragraph">
+<p><span class="image"><img src="https://user-images.githubusercontent.com/292738/194343605-0871c3ae-fcd6-4417-82f2-c1aa26e9743a.png" alt="194343605 0871c3ae fcd6 4417 82f2 c1aa26e9743a"></span></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_catálogo_de_surface">8.2. Catálogo de Surface</h3>
+<div class="paragraph">
+<p><span class="image"><img src="https://user-images.githubusercontent.com/292738/194342378-40b55e29-0828-4674-a671-c42986a7a1ad.png" alt="194342378 40b55e29 0828 4674 a671 c42986a7a1ad"></span></p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_creditos">9. Creditos</h2>
+<div class="sectionbody">
+Made with <i class="fa fa-heart">&#9829;</i> by <a href="https://ninjas.cl" target="_blank">Ninjas.cl</a>.
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-10-06 01:04:35 -0300
+Last updated 2022-10-06 11:53:00 -0300
 </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/languages/elixir.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/languages/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/languages/sh.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/languages/lua.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/languages/c.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/languages/txt.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/languages/html.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/languages/yaml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/languages/toml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/languages/json.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/languages/rust.min.js"></script>
+<script>
+if (!hljs.initHighlighting.called) {
+  hljs.initHighlighting.called = true
+  ;[].slice.call(document.querySelectorAll('pre.highlight > code')).forEach(function (el) { hljs.highlightBlock(el) })
+}
+</script>
 </body>
 </html>
