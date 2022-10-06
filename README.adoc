@@ -1,0 +1,511 @@
+:doctype: book
+:encoding: utf-8
+:numbered:
+:source-linenums-option:
+:username: elixircl
+:source: https://github.com/ElixirCL/surface-tailwind-sass
+:producer: elixircl.github.io
+:copyright: CC-BY-NC-SA 4.0
+:lang: es
+:description: Un proyecto de ejemplo de Phoenix con Surface, Tailwind y Sass.
+:keywords: elixir, programación, lenguaje, referencia
+:imagesdir: images
+:front-cover-image: docs/assets/cover.png
+:epub-chapter-level: 2
+:toc: left
+:toclevels: 3
+:toc-title: Tabla de Contenidos
+:source-highlighter: highlight.js
+:highlightjs-languages: elixir, javascript, bash, sh, lua, c, txt, html, yaml, toml, json, rust
+:ext-relative:
+//:stylesheet: style.css
+
+# Surface + Tailwind + Sass
+
+Realizaremos una configuración básica de https://surface-ui.org/[Surface UI], https://tailwindcss.com/[Tailwind] y https://sass-lang.com/[Sass] en un proyecto https://www.phoenixframework.org/[Phoenix con LiveView].
+
+Escrito por https://ninjas.cl[Camilo Castro] y https://github.com/elixircl/surface-tailwind-sass/graphs/contributors[colaboradores]. 
+Para https://elixircl.github.io[Elixir Chile].
+
+A menos que se especifique explícitamente, los contenidos de ésta obra están bajo una http://creativecommons.org/licenses/by-nc-sa/4.0/[Licencia Creative Commons Atribución-No-Comercial-Compartir-Igual 4.0 Internacional]
+http://creativecommons.org/licenses/by-nc-sa/4.0/[image:https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png[Licencia Creative Commons]]. El código fuente está bajo la licencia BSD.
+
+toc::[]
+
+## Creación de un nuevo proyecto
+
+Vamos a crear un nuevo proyecto, aunque si ya tienes uno previo igual es útil, puesto que realizaremos
+las configuraciones de forma manual para entender como funciona todo.
+
+Llamaremos al proyecto _"miapp"_, como solo es una prueba no necesitaremos Ecto (base de datos) ni Mailer (envío de correos).
+
+```sh
+$ mix phx.new miapp --no-ecto --no-mailer
+```
+
+## mix.exs
+
+Vamos a nuestro archivo `mix.exs` y agregamos las deps y sus configuraciones.
+
+Primero añadir `:surface` a la lista de compiladores
+
+```elixir
+def project do
+    # [ ...
+        compilers: [:surface] ++ Mix.compilers(),
+    # ] ...
+end
+```
+
+Añadimos la función `catalogues()` para cargar los catálogos de Surface.
+
+```elixir
+defp elixirc_paths(:test), do: ["lib", "test/support"]
+defp elixirc_paths(:dev), do: ["lib"] ++ catalogues()
+defp elixirc_paths(_), do: ["lib"]
+
+defp catalogues do
+    [
+        "priv/catalogue",
+        "deps/surface/priv/catalogue"
+    ]
+end
+```
+
+Luego añadimos las dependencias (aprovechamos de añadir `credo` igual para tener un linter).
+
+```elixir
+defp deps do
+    # [...
+        {:tailwind, "~> 0.1", runtime: Mix.env() == :dev},
+        {:dart_sass, "~> 0.4", runtime: Mix.env() == :dev},
+        {:surface, "~> 0.8"},
+        {:surface_catalogue, "~> 0.5.1"},
+        {:credo, "~> 1.6"},
+    # ]
+end
+```
+
+Finalmente configuramos los comandos a usar con mix
+
+```elixir
+defp aliases do
+    [
+        setup: ["deps.get", "cmd npm --prefix=./assets i"],
+        lint: ["format", "credo --strict"],
+        test: ["test"],
+        server: ["assets.deploy", "phx.server"],
+        "assets.clean": ["phx.digest.clean --all"],
+        "assets.deploy": [
+            "sass default --no-source-map",
+            "tailwind default --minify",
+            "esbuild default --minify",
+            "phx.digest priv/static -o priv/public"
+        ]
+    ]
+end
+```
+
+- `setup`: instala las dependencias de elixir y de javascript.
+- `lint`: formatea y evalúa que el código cumpla con los estándares de credo.
+- `test`: ejecuta las pruebas.
+- `server`: compila los assets y luego ejecuta el servidor.
+- `assets.clean`: limpia los archivos generados por phx.digest
+- `assets.deploy`: El órden es importante. Primero compila los archivos `scss`, luego los combina con tailwind, sigue el compilar los archivos _javascript_ del proyecto. Finalmente se copia los archivos generados desde el directorio `static` al directorio `public`.
+
+Cuando este configurado nuestro `mix.exs` podemos ejecutar `mix deps.get`
+para instalar las dependencias.
+
+image:https://user-images.githubusercontent.com/292738/194191092-507e70c0-cfb4-4d9e-9565-0ac8414d3edc.png[mix deps.get]
+
+## .formatter.exs
+
+Añadiremos la configuración para el comando `mix format`
+
+```elixir
+[
+    # import_deps: [:ecto, :phoenix, :surface],
+    import_deps: [:phoenix, :surface],
+    plugins: [Phoenix.LiveView.HTMLFormatter, Surface.Formatter.Plugin],
+    inputs: ["*.{leex,heex,ex,exs,sface}", "priv/*/seeds.exs", "{config,lib,test}/**/*.{leex,heex,ex,exs,sface}"],
+    subdirectories: ["priv/*/migrations"]
+]
+```
+
+## .gitignore
+
+Aprovechamos de agregar algunas reglas para ignorar ciertos archivos de surface a nuestro archivo `.gitignore`:
+
+```text
+.DS_Store
+_hooks/
+_components.css
+```
+
+### .vscode/settings.json
+
+Si usas _VSCode_ puedes añadir la siguiente configuración:
+
+
+```json
+{
+    "scss.lint.unknownAtRules": "ignore",
+    "files.associations": {
+        "*.css": "tailwindcss"
+    }
+}
+```
+
+## Directorio assets/
+
+Este directorio tendrá los archivos `js` y `css` que luego serán
+procesados por `tailwind`, `sass` y `esbuild`.
+
+### package.json
+Crearemos un archivo llamado `package.json` donde podremos
+incluir las dependencias de javascript que necesitemos en el proyecto.
+
+Por el momento, solamente pondremos un archivo simple sin dependencias.
+
+```json
+{
+    "private": true,
+    "engines": {
+        "npm": ">=6.0.0",
+        "node": ">=14.0.0"
+    }
+}
+```
+### postcss.config.js
+
+El contenido puede ser similar a lo siguiente:
+
+```js
+module.exports = {
+    plugins: [
+        require('tailwindcss'),
+        require('autoprefixer'),
+    ],
+}
+```
+
+Más info en https://postcss.org/
+
+### tailwind.config.js
+
+El contenido puede ser similar a lo siguiente:
+
+```js
+module.exports = {
+  important: true,
+  content: [
+    "../lib/**/*.{ex,leex,heex,eex,sface}",
+    "./js/_hooks/**/*.js",
+    "./js/app.js"
+  ],
+}
+```
+
+Para más detalles se puede ver la página https://tailwindcss.com/docs/configuration
+
+### css/app.scss
+
+Cabe destacar que utilizar https://sass-lang.com[Sass] es completamente
+opcional y hasta innecesario si se realiza una configuración apropiada de _postcss_. Revisar cómo usando acá https://tailwindcss.com/docs/using-with-preprocessors
+
+Crearemos un archivo nuevo llamado `css/app.scss` que simplemente cambia el color del background.
+
+```css
+$color: purple;
+body {
+    background-color: $color;
+}
+```
+
+Aprovecharemos de eliminar los archivos:
+
+- `app.css`
+- `phoenix.css`
+
+### js/app.js
+
+Vamos al archivo `js/app.js` y eliminamos la importación de los estilos
+css:
+
+```js
+// import "../css/app.css"
+```
+
+Y agregamos los Hooks creados por Surface
+
+```js
+import Hooks from "./_hooks"
+// ...
+let liveSocket = new LiveSocket("/live", Socket, { hooks: Hooks, ... })
+```
+
+## Directorio config/
+
+Vamos a usar dos configuraciones específicas. Una será la de producción
+que guardará y aglomerará (digest) los archivos js y css. Guardará los archivos en el directorio `priv/static`. La otra guardará en un directorio llamado
+`priv/public` que será usado principalmente para desarrollo (para tener autoreload) y evitar el caché.
+
+### config/config.exs
+
+Vamos a configurar las opciones predeterminadas. Esta configuración guardará los archivos en `priv/static`.
+
+Primero añadimos que todos los assets serán entregados desde la ruta
+`/static`
+
+```elixir
+config :miapp, MiappWeb.Endpoint,
+  # ... 
+  static_url: [path: "/static"]
+```
+
+Ahora configuramos tanto _Tailwind_ como _Sass_ (debajo de la config de esbuild)
+
+```elixir
+# esbuild
+config :esbuild,
+  version: "0.14.29",
+  default: [
+    args:
+      ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+    cd: Path.expand("../assets", __DIR__),
+    env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
+  ]
+
+# sass
+config :dart_sass,
+    version: "1.39.0",
+    default: [
+        args: ~w(--load-path=./node_modules css/app.scss ../priv/static/assets/app-raw.css),
+        cd: Path.expand("../assets", __DIR__)
+    ]
+
+# tailwind
+config :tailwind,
+    version: "3.0.7",
+        default: [
+            args: ~w(
+                --config=tailwind.config.js
+                --input=../priv/static/assets/app-raw.css
+                --output=../priv/static/assets/app.css
+            ),
+            cd: Path.expand("../assets", __DIR__)
+        ]
+```
+
+### config/dev.exs
+
+Ésta configuración guardará los archivos en `priv/public`. Sobre escribe las configuraciones y rutas de `config.exs`.
+
+```elixir
+config :esbuild,
+  version: "0.14.29",
+  default: [
+    args: ~w(js/app.js --bundle --target=es2017 --outdir=../priv/public/assets),
+    cd: Path.expand("../assets", __DIR__),
+    env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
+  ],
+  catalogue: [
+    args: ~w(../deps/surface_catalogue/assets/js/app.js --bundle --target=es2017 --minify --outdir=../priv/public/assets/catalogue),
+    cd: Path.expand("../assets", __DIR__),
+    env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
+  ]
+
+# agregamos la configuracion de los catálogos de surface
+# para que pueda encontrar los estilos, ya que modificamos
+# la ruta de fábrica para los assets.
+config :surface_catalogue,
+  assets_path: "/static/assets/catalogue/"
+
+config :dart_sass,
+  version: "1.39.0",
+  default: [
+    args: ~w(--load-path=./node_modules css/app.scss ../priv/public/assets/app-raw.css),
+    cd: Path.expand("../assets", __DIR__)
+  ]
+
+config :tailwind,
+  version: "3.0.7",
+  default: [
+    args: ~w(
+    --config=tailwind.config.js
+    --input=../priv/public/assets/app-raw.css
+    --output=../priv/public/assets/app.css
+  ),
+    cd: Path.expand("../assets", __DIR__)
+  ]
+```
+
+Luego configuramos el arreglo de `watchers` para verificar cuando
+se ha cambiado un archivo y volver a compilarlo. Incluyendo
+los archivos javascript, sass y surface.
+
+```elixir
+config :miapp, MiappWeb.Endpoint,
+    # ...
+    watchers: [
+        esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
+        esbuild: {Esbuild, :install_and_run, [:catalogue, ~w(--sourcemap=inline --watch)]},
+        sass: {
+            DartSass,
+            :install_and_run,
+            [:default, ~w(--embed-source-map --source-map-urls=absolute --watch)]
+        },
+        tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
+    ]
+```
+
+Finalmente configuramos los formatos de archivo que serán recompilados
+
+```elixir
+config :miapp, MiappWeb.Endpoint,
+    reloadable_compilers: [:phoenix, :elixir, :surface],
+    live_reload: [
+        patterns: [
+            # ...
+            ~r"priv/public/.*(js|css|png|jpeg|jpg|gif|svg)$",
+            ~r"priv/catalogue/.*(ex)$",
+            ~r"lib/miapp_web/(live|views|components)/.*(ex|js)$",
+            ~r"lib/miapp_web/live/.*(sface)$",
+            # ...
+        ]
+]
+```
+
+## Directorio lib/miapp_web
+
+En este directorio irán las configuraciones de los sistemas que sirven
+los requests desde el navegador y renderizan html.
+
+### endpoint.ex
+
+Necesitamos configurar el archivo `endpoint.ex` para permitir
+que los assets sean servidos desde nuestro directorio especial.
+
+```elixir
+    # ...
+    socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
+    # ...
+
+    plug Plug.Static,
+        at: "/",
+        from: :miapp,
+        gzip: false,
+        only: ~w(favicon.ico robots.txt)
+    
+    plug Plug.Static,
+        at: "/static",
+        from: {:miapp, "priv/public"},
+        gzip: false,
+        only: ~w(assets fonts images)
+```
+
+### router.ex
+
+Importamos las funciones de _Surface_ para utilizarlas
+en nuestras rutas.
+
+```elixir
+defmodule MiappWeb.Router do
+    use MiappWeb, :router
+    import Surface.Catalogue.Router
+    # ...
+```
+
+Luego añadimos la ruta a nuestra página de index
+llamada `live/home.ex`.
+
+
+```elixir
+# ...
+scope "/", MiappWeb do
+    pipe_through :browser
+
+    live_session :default do
+        live "/", Live.Home, :index
+    end
+end
+# ...
+```
+
+Finalmente añadimos la ruta para acceder a los catálogos 
+de _Surface_, solamente cuando estemos en ambiente de 
+desarollo.
+
+```elixir
+if Mix.env() == :dev do
+    scope "/" do
+        pipe_through :browser
+        surface_catalogue "/catalogue"
+    end
+end
+```
+
+### live/home.ex
+
+Crearemos un archivo llamado `live/home.ex` para renderizar un html simple usando el siguiente contenido:
+
+```elixir
+defmodule MiappWeb.Live.Home do
+  use MiappWeb, :surface_live_view
+
+  @impl true
+  def render(assigns) do
+    ~F"""
+    <div class={"bg-slate-100"}>
+      <div class={"text-sky-500"}>
+        <h1 class={"text-lg", "font-medium"}>Esta es Mi App</h1>
+      </div>
+    </div>
+    """
+  end
+end
+```
+
+### miapp_web.ex
+
+Como podemos notar estamos llamando a `surface_live_view` 
+para importar un código global. Ésto nos permitirá 
+simplificar el código, reutilizando la importación.
+
+Añadimos lo siguiente a `miapp_web.ex`:
+
+```elixir
+def surface_live_view do
+    quote do
+        use Surface.LiveView,
+            layout: {MiappWeb.LayoutView, "live.html"}
+        unquote(view_helpers())
+    end
+end
+```
+
+## Probando
+
+Si todo sale como esta previsto, solo bastaría ejecutar el comando
+
+`mix server`
+
+para hacer el deploy de los assets y ejecutar el servidor.
+
+Al cual podremos acceder desde http://localhost:4000
+
+### Página Principal
+
+image:https://user-images.githubusercontent.com/292738/194343605-0871c3ae-fcd6-4417-82f2-c1aa26e9743a.png[]
+
+### Catálogo de Surface
+
+image:https://user-images.githubusercontent.com/292738/194342378-40b55e29-0828-4674-a671-c42986a7a1ad.png[]
+
+
+## Creditos
+
+++++
+Made with <i class="fa fa-heart">&#9829;</i> by <a href="https://ninjas.cl" target="_blank">Ninjas.cl</a>.
+++++
+
