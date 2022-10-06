@@ -28,7 +28,9 @@ Escrito por https://ninjas.cl[Camilo Castro] y https://github.com/elixircl/surfa
 Para https://elixircl.github.io[Elixir Chile].
 
 A menos que se especifique explícitamente, los contenidos de ésta obra están bajo una http://creativecommons.org/licenses/by-nc-sa/4.0/[Licencia Creative Commons Atribución-No-Comercial-Compartir-Igual 4.0 Internacional]
-http://creativecommons.org/licenses/by-nc-sa/4.0/[image:https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png[Licencia Creative Commons]]. El código fuente está bajo la licencia BSD.
+http://creativecommons.org/licenses/by-nc-sa/4.0/[image:https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png[Licencia Creative Commons]]. 
+
+El código fuente está bajo la licencia BSD. https://github.com/elixircl/surface-tailwind-sass/
 
 toc::[]
 
@@ -170,6 +172,9 @@ Por el momento, solamente pondremos un archivo simple sin dependencias.
 ```json
 {
     "private": true,
+    "devDependencies": {
+        "autoprefixer": "^9.8.0"
+    },
     "engines": {
         "npm": ">=6.0.0",
         "node": ">=14.0.0"
